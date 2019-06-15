@@ -30,14 +30,14 @@ class Profile {
     });  
   }
   
-  convertMoney({ fromCurrency, targetCurrency, targetAmount }, callback) {
+  convertMoney({fromCurrency, targetCurrency, targetAmount}, callback) {
     return ApiConnector.convertMoney({ fromCurrency, targetCurrency, targetAmount }, (err, data) => {
       console.log(`From ${fromCurrency} to ${targetCurrency}`);  
       callback(err, data);
     });   
   }
   
-  transferMoney({ to, amount }, callback) {
+  transferMoney({to, amount}, callback) {
     return ApiConnector.transferMoney({ to, amount }, (err, data) => {
       console.log(`Transfering ${amount} of money to ${to}`);
       callback(err, data);
@@ -51,92 +51,82 @@ function getStocks(callback) {
     callback(err, data);
   });   
 }
-  
+
 function main() {
-  
-  const Petya = new Profile({
-    username: 'Petya',
-    name: {
-      firstName: 'Petya',
-      lastName: 'Petrov'  
-    },
-    password: 'www'
-  });
-  
-  const Vasya = new Profile({
-    username: 'Vasya',
-    name: {
-      firstName: 'Vasya',
-      lastName: 'Vasyatka'  
-    },
-    password: 'sss'
-  });
-    
-  getStocks((err,data) => {
-    if (err) {
-      console.log(`getStocks fail`);  
-    } 
 
-    const convertNow = data[99];
-    
-    Petya.createUser((err, data) => {
-      if (err) {
-        console.log(`Ошибка при создании пользователя`);  
-      } else {
-        console.log(`${Petya.username} создано`);  
-        console.log(data);
-  
-        Petya.performLogin((err, data) => {
-          if (err) {
-            console.log(`Ошибка при авторизации пользователя`);    
-          } else {
-            console.log(`Пользователь авторизован`);  
-  
-            Petya.addMoney({currency: 'EUR', amount: 50000}, (err, data) => {
-              if (err) {
-                console.log(`Ошибка при добавлении денег в кошелек`);    
-              } else {
-                console.log(`Добавлено ${amount} ${currency}`);
+  const David = new Profile({
+    username: 'david',
+    name: { firstName: 'David', lastName: 'Black' },
+    password: 'davidspass',
+  });
+
+  const Rick = new Profile({
+    username: 'rick',
+    name: { firstName: 'Rick', lastName: 'Silver' },
+    password: 'rickspass',
+  });      
                 
-                const convertAmount = 50000 * convertNow.EUR_NETCOIN;
-                Petya.convertMoney({
-                  fromCurrency: 'EUR',
-                  targetCurrency: 'NETCOIN', 
-                  targetAmount: convertAmount
-                },
-                (err, data) => {
-                  if (err) {
-                    console.log(`Ошибка конвертации`);  
-                  } else {
-                    console.log(`Конвертация успешна - EUR в ${convertAmount} Netcoins`);   
-                    console.log(data); 
+    const addAmount = {currency: 'EUR', amount: 50000};
 
-                    Vasya.createUser((err, data) => {
-                      if (err) {
-                        console.log(`Ошибка при создании пользователя`);    
-                      } else {
-                        console.log(`${Vasya.username} создано`);  
-
-                        Petya.transferMoney({to: Vasya.username, amount: convertAmount}, (err, data) => {
-                          if (err) {
-                            console.log(`Ошибка перевода средств`);  
-                          } else {
-                            console.log(`Успешный перевод пользователю ${Vasya.username}`);  
-                          }
-                        });
-                      }  
-                    });
-                  }
-                });
-              }
-            });
-          }  
-        });
+    getStocks((err, data) => {
+      if (err) {
+        console.log('Error during getting stocks');
       }
-    });  
-  
-  });
+        
+      const getStock = data[99];        
+        
+        David.createUser((err, data) => {
+          if (err) {
+            console.log(`Error during creating ${David.username}`);
+          } else {
+            console.log(`User ${David.username} successfully created`);
+            console.log(data);
 
+            David.performLogin((err, data) => {
+              if (err) {
+                console.log(`Error during logging in ${David.username}`);
+              } else {
+                console.log(`User ${David.username} successfully logging in`);
+    
+                David.addMoney(addAmount, (err, data) => {
+                  if (err) {
+                    console.error(`Error during adding money to ${David.username}`);
+                  } else {
+                    console.log(`Added ${addAmount.amount} ${addAmount.currency} to ${David.username}`);
+                    console.log(data);
+
+                    const getConvertAmount = getStock['EUR_NETCOIN'] * addAmount.amount;                                                        
+                    David.convertMoney({ fromCurrency: addAmount.currency, targetCurrency: 'NETCOIN', targetAmount: getConvertAmount }, (err, data) => {
+                      if (err) {
+                        console.log(`Error converting money from  ${addAmount.currency} to NETCOIN`);
+                      } else {
+                        console.log(`Successfully converted ${addAmount.amount} ${addAmount.currency} to ${getConvertAmount} NETCOIN`);
+                        console.log(data);
+                                       
+                        Rick.createUser((err, data) => {
+                          if (err) {
+                            console.log(`Error during creating ${Rick.username}`);
+                          } else {
+                            console.log(`User ${Rick.username} successfully created`);
+                                                
+                            David.transferMoney({ to: Rick.username, amount: getConvertAmount }, (err, data) => {
+                              if (err) {
+                                console.log(`Error during transfer money to ${Rick.username}`);
+                              } else {
+                                console.log(`Successfully transfered ${getConvertAmount} netcoins to ${Rick.username}`);
+                              }
+                            });            
+                          }
+                        });    
+                      }
+                    });            
+                  }
+                });                    
+              }
+            });        
+          }
+        });
+    });
 }
-  
+
 main();
