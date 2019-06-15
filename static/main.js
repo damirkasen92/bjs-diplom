@@ -106,9 +106,10 @@ function main() {
                 },
                 (err, data) => {
                   if (err) {
-                    console.log(`Convert error`);  
+                    console.log(`Ошибка конвертации`);  
                   } else {
-                    console.log(`Convert success 50000 to ${convertAmount}`);    
+                    console.log(`Конвертация успешна - EUR в ${convertAmount} Netcoins`);   
+                    console.log(data); 
 
                     Vasya.createUser((err, data) => {
                       if (err) {
@@ -118,9 +119,9 @@ function main() {
 
                         Petya.transferMoney({to: Vasya.username, amount: convertAmount}, (err, data) => {
                           if (err) {
-                            console.log(`Transfer failed`);  
+                            console.log(`Ошибка перевода средств`);  
                           } else {
-                            console.log(`Transfer success to ${Vasya.username}`);  
+                            console.log(`Успешный перевод пользователю ${Vasya.username}`);  
                           }
                         });
                       }  
