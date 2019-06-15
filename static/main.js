@@ -84,6 +84,7 @@ function main() {
         console.log(`Ошибка при создании пользователя`);  
       } else {
         console.log(`${Petya.username} создано`);  
+        console.log(data);
   
         Petya.performLogin((err, data) => {
           if (err) {
@@ -96,17 +97,18 @@ function main() {
                 console.log(`Ошибка при добавлении денег в кошелек`);    
               } else {
                 console.log(`Добавлено ${amount} ${currency}`);
-
+                
+                const convertAmount = 50000 * convertNow.EUR_NETCOIN;
                 Petya.convertMoney({
                   fromCurrency: 'EUR',
-                  targetCurrency: 'EUR_NETCOIN', 
-                  targetAmount: 50000 * convertNow.EUR_NETCOIN
+                  targetCurrency: 'NETCOIN', 
+                  targetAmount: convertAmount
                 },
                 (err, data) => {
                   if (err) {
                     console.log(`Convert error`);  
                   } else {
-                    console.log(`Convert success 50000 to ${targetAmount}`);    
+                    console.log(`Convert success 50000 to ${convertAmount}`);    
 
                     Vasya.createUser((err, data) => {
                       if (err) {
@@ -114,7 +116,7 @@ function main() {
                       } else {
                         console.log(`${Vasya.username} создано`);  
 
-                        Petya.transferMoney({to: Vasya.username, amount: targetAmount}, (err, data) => {
+                        Petya.transferMoney({to: Vasya.username, amount: convertAmount}, (err, data) => {
                           if (err) {
                             console.log(`Transfer failed`);  
                           } else {
