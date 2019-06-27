@@ -11,14 +11,14 @@ class Profile {
   
   createUser(callback) {
     return ApiConnector.createUser({username: this.username, name: this.name, password: this.password}, (err, data) => {
-      console.log(`Создание нового пользователя ${this.username}`);
+      console.log(`Creating user ${this.username}`);
       callback(err, data);
     });
   }
   
   performLogin(callback) {
     return ApiConnector.performLogin({username: this.username, password: this.password}, (err, data) => {
-      console.log(`Авторизация пользователя ${this.username}`);  
+      console.log(`Authorizing user ${this.username}`);  
       callback(err, data);
     });
   }  
@@ -32,14 +32,14 @@ class Profile {
   
   convertMoney({fromCurrency, targetCurrency, targetAmount}, callback) {
     return ApiConnector.convertMoney({ fromCurrency, targetCurrency, targetAmount }, (err, data) => {
-      console.log(`From ${fromCurrency} to ${targetCurrency}`);  
+      console.log(`Converting ${fromCurrency} to ${targetAmount} ${targetCurrency}`);  
       callback(err, data);
     });   
   }
   
   transferMoney({to, amount}, callback) {
     return ApiConnector.transferMoney({ to, amount }, (err, data) => {
-      console.log(`Transfering ${amount} of money to ${to}`);
+      console.log(`Transfering ${amount} of NETCOIN to ${to}`);
       callback(err, data);
     });
   }
@@ -80,7 +80,6 @@ function main() {
             console.log(`Error during creating ${David.username}`);
           } else {
             console.log(`User ${David.username} successfully created`);
-            console.log(data);
 
             David.performLogin((err, data) => {
               if (err) {
@@ -93,15 +92,14 @@ function main() {
                     console.error(`Error during adding money to ${David.username}`);
                   } else {
                     console.log(`Added ${addAmount.amount} ${addAmount.currency} to ${David.username}`);
-                    console.log(data);
 
-                    const getConvertAmount = getStock['EUR_NETCOIN'] * addAmount.amount;                                                        
+                    const getConvertAmount = getStock['EUR_NETCOIN'] * addAmount.amount;  
+
                     David.convertMoney({ fromCurrency: addAmount.currency, targetCurrency: 'NETCOIN', targetAmount: getConvertAmount }, (err, data) => {
                       if (err) {
                         console.log(`Error converting money from  ${addAmount.currency} to NETCOIN`);
                       } else {
                         console.log(`Successfully converted ${addAmount.amount} ${addAmount.currency} to ${getConvertAmount} NETCOIN`);
-                        console.log(data);
                                        
                         Rick.createUser((err, data) => {
                           if (err) {
@@ -113,7 +111,7 @@ function main() {
                               if (err) {
                                 console.log(`Error during transfer money to ${Rick.username}`);
                               } else {
-                                console.log(`Successfully transfered ${getConvertAmount} netcoins to ${Rick.username}`);
+                                console.log(`Successfully transfered ${getConvertAmount} NETCOIN to ${Rick.username}`);
                               }
                             });            
                           }
